@@ -1,0 +1,16 @@
+# Make sure all modules are found by pytest
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
+[tool.coverage.paths]
+source = ["kvdb"]
+
+[tool.coverage.run]
+branch = true
+source = ["kvdb"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
