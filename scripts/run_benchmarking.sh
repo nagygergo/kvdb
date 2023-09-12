@@ -1,3 +1,4 @@
+source "${BASH_SOURCE%/*}/../.venv/bin/activate"
 ${BASH_SOURCE%/*}/start_server.sh > /dev/null 2>&1 &
 process_id=$!
 sleep 2
