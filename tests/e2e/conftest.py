@@ -77,3 +77,36 @@ async def send_message(host_port_tuple, message):
     writer.close()
     await writer.wait_closed()
     return data.decode("utf-8")
+
+
+class Client():
+    """Simple test client for kvdb."""
+    reader: asyncio.StreamReader
+    writer: asyncio.StreamWriter
+    host: str
+    port: str
+
+    def __init__(self, host_port_tuple):
+        host, port = host_port_tuple
+        self.host = host
+        self.port = port
+
+    async def __aenter__(self):
+        reader, writer = await asyncio.open_connection(self.host, self.port)
+        self.reader = reader
+        self.writer = writer
+        return self
+
+    async def __aexit__(self, *args):
+        self.writer.close()
+        await self.writer.wait_closed()
+
+    async def send(self, msg, no_newline=False):
+        """Sends a message to the server."""
+        if no_newline:
+            self.writer.write(bytes(msg, "utf-8"))
+        else:
+            self.writer.write(bytes(msg + "\n", "utf-8"))
+        await self.writer.drain()
+        data = await self.reader.readuntil(bytes("\n", "utf-8"))
+        return data.decode()

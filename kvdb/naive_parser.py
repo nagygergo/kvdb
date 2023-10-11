@@ -1,6 +1,8 @@
 """Parser for the KVDB RPC commands."""
 import asyncio
+import logging
 from .exceptions import InvalidCommandException, InvalidKeyException
+LOG = logging.getLogger(__name__)
 
 
 async def parse_message(reader: asyncio.StreamReader, end_bytes=None):
@@ -8,6 +10,8 @@ async def parse_message(reader: asyncio.StreamReader, end_bytes=None):
         :param bytes end_bytes Closing byte of the message.
             By default it reads until EOF."""
     try:
+        if reader.at_eof():
+            return await _parse_close()
         command = await reader.readuntil(b' ')
         match command:
             case b"REUSECONN ":
@@ -19,6 +23,7 @@ async def parse_message(reader: asyncio.StreamReader, end_bytes=None):
             case b"GET ":
                 return await _parse_get(reader, end_bytes)
             case _:
+                LOG.error("Command %s is invalid", command)
                 raise InvalidCommandException()
     except EOFError as exc:
         raise InvalidCommandException() from exc
@@ -51,8 +56,12 @@ async def _parse_reuseconn():
     return ("REUSECONN", None)
 
 
+async def _parse_close():
+    return ("CLOSE", None)
+
+
 async def _read_until_end_bytes(reader:  asyncio.StreamReader, end_bytes=None):
     if end_bytes is not None:
         read_bytes = await reader.readuntil(end_bytes)
-        return read_bytes[:len(end_bytes)]
+        return read_bytes[:-len(end_bytes)]
     return await reader.read(-1)

@@ -13,7 +13,8 @@ async def start(host, port):
     LOG.info('Starting server on %s %s', host, port)
     storage = NaiveStorage()
     server = await asyncio.start_server(lambda reader, writer:
-                                        handler(reader, writer, storage), host, port)
+                                        handler(reader, writer, storage),
+                                        host, port)
 
     return server
 
