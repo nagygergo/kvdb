@@ -1,3 +1,4 @@
+"""Tests for server."""
 import pytest
 from kvdb import server
 from .utils import LOCALHOST, next_free_port
@@ -5,6 +6,7 @@ from .utils import LOCALHOST, next_free_port
 
 @pytest.mark.asyncio
 async def test_start_server():
+    """Test to check if server is claiming the correct host and port."""
     port = next_free_port()
     server_instance = await server.start(LOCALHOST, port)
     assert server_instance.is_serving()
