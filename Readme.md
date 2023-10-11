@@ -11,6 +11,18 @@ As part of a single connection the user is only allowed to send exactly one requ
 
 `DELETE <key>`
 
+
+### Requests for reusing connections
+
+If the connection is reused, then commands will be only interpreted if `\n` is sent as a closing byte. If it's not sent, and the connection is interrupted, then the command is discarded. 
+
+`REUSECONN` - Tells the server that multiple commands will be sent over the connection.
+
+`SET <key> <value>\n`
+
+`GET <key>\n`
+
+`DELETE <key>\n` 
 ### Responses
 
 `<value>` - Successful response for `GET` request.

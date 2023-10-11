@@ -2,9 +2,8 @@
 import argparse
 import asyncio
 import logging
-from .handler import handler
+from .naive_handler import handler
 from .naive_storage import NaiveStorage
-
 
 LOG = logging.getLogger()
 
@@ -14,8 +13,7 @@ async def start(host, port):
     LOG.info('Starting server on %s %s', host, port)
     storage = NaiveStorage()
     server = await asyncio.start_server(lambda reader, writer:
-                                        handler(reader, writer, storage),
-                                        host, port)
+                                        handler(reader, writer, storage), host, port)
 
     return server
 
@@ -26,6 +24,7 @@ def _parse_cli_args():
     parser.add_argument('-p', '--port', required=True, dest="port", type=int)
     parser.add_argument("-l", "--log-level", required=False,
                         dest="log_level", type=int)
+    parser.add_argument("-f", "--multiplex")
     return parser.parse_args()
 
 
